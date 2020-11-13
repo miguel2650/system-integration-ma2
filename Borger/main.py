@@ -10,6 +10,7 @@ import models
 import schemas
 import crud
 from database import SessionLocal, engine
+import uvicorn
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -94,3 +95,7 @@ def delete_address(addressId: int, db: Session = Depends(get_db)):
     if db_address is None:
         raise HTTPException(status_code=404, detail="Address not found")
     return crud.delete_address(db=db, address=db_address)
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=5004)
