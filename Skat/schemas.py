@@ -40,7 +40,6 @@ class SkatYear(BaseModel):
 
 class PayTaxes(BaseModel):
     user_id: int
-    total_amount: int
 
 
 class SkatUserCreate(BaseModel):

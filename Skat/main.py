@@ -122,9 +122,13 @@ def update_skat_user(skatYearId: int, skat_year: schemas.SkatYearCreate, db: Ses
     return crud.update_skat_year(db=db, db_skat_year=db_skat_year, skat_year=skat_year)
 
 
-@app.post("/api/payTaxes", response_model=schemas.SkatUserYear)
+@app.post("/api/payTaxes", response_model=List[schemas.SkatUserYear])
 def pay_taxes(pay_taxes: schemas.PayTaxes, db: Session = Depends(get_db)):
-    return crud.pay_taxes(db=db, pay_taxes=pay_taxes)
+    try:
+        skat_user_years = crud.pay_taxes(db=db, pay_taxes=pay_taxes)
+    except requests.exceptions.HTTPError:
+        raise HTTPException(status_code=404, detail="Failed paying taxes")
+    return skat_user_years
 
 
 if __name__ == "__main__":

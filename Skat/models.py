@@ -22,8 +22,9 @@ class SkatUserYear(Base):
     skat_year_id = Column('SkatYearId', Integer, ForeignKey(
         'SkatYear.id', ondelete='CASCADE'))
     user_id = Column('UserId', Integer)
-    is_paid = Column('IsPaid', Boolean, default=True)
+    is_paid = Column('IsPaid', Boolean, default=False)
     amount = Column('Amount', Integer)
+    skat_year = relationship('SkatYear')
 
 
 class SkatYear(Base):

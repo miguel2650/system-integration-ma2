@@ -1,5 +1,6 @@
 import models
 import schemas
+import datetime
 from sqlalchemy.orm import Session
 import requests
 
@@ -86,24 +87,41 @@ def delete_skat_year(db: Session, skat_year: schemas.SkatYear):
 
 def pay_taxes(db: Session, pay_taxes: schemas.PayTaxes):
     # /api/account/{bankUserId}
-    skat_year = db.query(models.SkatYear).last()
-    skat_user_year = db.query(models.SkatUserYear).filter(
+    skat_year = db.query(models.SkatYear).first()
+    skat_user_years = db.query(models.SkatUserYear).filter(
         models.SkatUserYear.user_id == pay_taxes.user_id and models.SkatUserYear.user_id != skat_year.id)
 
     amount_due = 0
-    user_id = 1  # skat_user_year.user_id
+    user_id = pay_taxes.user_id
     deposits = requests.get(
-        f'localhost:5005/api/list-deposits/{user_id}')
-    for item in skat_user_year:
+        f'http://localhost:5005/api/list-deposits/{user_id}')
+    for skat_user_year in skat_user_years:
         # If user did not pay taxes past skat years
         # A user is deemed to have paid his taxes if the value is greater than 0
-        if(not item.is_paid):
-            for deposit in deposits:
-                deposit_date = deposit['created_at']
-                start_date = item.skat_year.start_date
-                end_date = item.skat_year.end_date
-                print(start_date)
+        if(not skat_user_year.is_paid):
+            for deposit in deposits.json():
+                deposit_date = datetime.datetime.strptime(
+                    deposit['created_at'], "%Y-%m-%d").date()
+                start_date = skat_user_year.skat_year.start_date
+                end_date = skat_user_year.skat_year.end_date
+                if deposit_date >= start_date and deposit_date <= end_date:
+                    amount_due += int(deposit['amount'])
+                    skat_user_year.is_paid = True
+    # If the user has a sufficient amount of money in their bank account
+    # The missing amount of taxes will be withdrawn.
 
     req = requests.post(
-        "http://localhost:7071/api/Skat_Tax_Calculator", json={"money": pay_taxes.total_amount})
-    return "skede"
+        "http://localhost:7071/api/Skat_Tax_Calculator", json={"money": amount_due})
+    req.raise_for_status()
+    tax_amount = req.json()['tax_money']
+    req = requests.post(
+        "http://localhost:5005/api/withdraw-money",
+        json={
+            "user_id": user_id,
+            "amount": tax_amount
+        }
+    )
+    req.raise_for_status()
+    db.commit()
+
+    return skat_user_years
