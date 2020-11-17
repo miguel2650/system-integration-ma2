@@ -66,10 +66,8 @@ def read_all_skat_years(db: Session):
     return db.query(models.SkatYear).all()
 
 
-def update_skat_year(db: Session, db_skat_year: schemas.SkatYear, skat_year: schemas.SkatYear):
+def update_skat_year(db: Session, db_skat_year: schemas.SkatYear, skat_year: schemas.SkatYearCreate):
     db_skat_year.label = skat_year.label
-    db_skat_year.created_at = skat_year.created_at
-    db_skat_year.modified_at = skat_year.modified_at
     db_skat_year.start_date = skat_year.start_date
     db_skat_year.end_date = skat_year.end_date
     db.commit()

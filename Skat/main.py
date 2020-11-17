@@ -113,6 +113,15 @@ def delete_skat_year(skatYearId: int, db: Session = Depends(get_db)):
     return crud.delete_skat_year(db=db, skat_year=db_skat_year)
 
 
+@app.put("/api/skatYear/{skatYearId}", response_model=schemas.SkatYear)
+def update_skat_user(skatYearId: int, skat_year: schemas.SkatYearCreate, db: Session = Depends(get_db)):
+    ''' Update existing skat year '''
+    db_skat_year = crud.read_skat_year(db=db, user_id=skatYearId)
+    if db_skat_year is None:
+        raise HTTPException(status_code=404, detail="Skat year not found")
+    return crud.update_skat_year(db=db, db_skat_year=db_skat_year, skat_year=skat_year)
+
+
 @app.post("/api/payTaxes", response_model=schemas.SkatUserYear)
 def pay_taxes(pay_taxes: schemas.PayTaxes, db: Session = Depends(get_db)):
     return crud.pay_taxes(db=db, pay_taxes=pay_taxes)
