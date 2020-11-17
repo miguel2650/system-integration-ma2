@@ -119,4 +119,4 @@ def pay_taxes(pay_taxes: schemas.PayTaxes, db: Session = Depends(get_db)):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=5006)
+    uvicorn.run('main:app', host="0.0.0.0", reload=True, port=5006)

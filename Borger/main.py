@@ -40,11 +40,15 @@ def read_root():
     return RedirectResponse(url="/docs/")
 
 # Get all borgere
+
+
 @app.get("/api/users", response_model=List[schemas.BorgerUser])
 def read_all_borger_users(db: Session = Depends(get_db)):
     return crud.read_all_borger_users(db=db)
 
 # Get a borger
+
+
 @app.get("/api/user/{userId}", response_model=schemas.BorgerUser)
 def read_borger_user(userId: int, db: Session = Depends(get_db)):
     db_borger_user = crud.read_borger_user(db=db, UserId=userId)
@@ -59,6 +63,8 @@ def create_borger_user(borger: schemas.BorgerUserCreate, db: Session = Depends(g
     return crud.create_borger_user(db=db, borgerUser=borger)
 
 # Update a borger
+
+
 @app.put("/api/user/{userId}", response_model=schemas.BorgerUser)
 def update_borger_user(userId: int, borger: schemas.BorgerUserCreate, db: Session = Depends(get_db)):
     db_borger_user = crud.read_borger_user(db=db, UserId=userId)
@@ -67,6 +73,8 @@ def update_borger_user(userId: int, borger: schemas.BorgerUserCreate, db: Sessio
     return crud.update_borger_user(db=db, dbBorgerUser=db_borger_user, borgerUser=borger)
 
 # Deletes a borger
+
+
 @app.delete("/api/user/{userId}", response_model=bool)
 def delete_borger_user(userId: int, db: Session = Depends(get_db)):
     db_borger_user = crud.read_borger_user(db=db, UserId=userId)
@@ -75,11 +83,15 @@ def delete_borger_user(userId: int, db: Session = Depends(get_db)):
     return crud.delete_borger_user(db=db, borgerUser=db_borger_user)
 
 # Get all address
+
+
 @app.get("/api/addresses", response_model=List[schemas.Address])
 def read_all_borger_address(db: Session = Depends(get_db)):
     return crud.read_all_addresses(db=db)
 
 # Create an address
+
+
 @app.post("/api/address", response_model=schemas.Address)
 def create_borger_address(address: schemas.AddressCreate, db: Session = Depends(get_db)):
     db_borger_user = crud.read_borger_user(
@@ -89,6 +101,8 @@ def create_borger_address(address: schemas.AddressCreate, db: Session = Depends(
     return crud.create_address(db=db, address=address)
 
 # Deletes a borger
+
+
 @app.delete("/api/address/{addressId}", response_model=bool)
 def delete_address(addressId: int, db: Session = Depends(get_db)):
     db_address = crud.get_address_by_id(db=db, addressId=addressId)
@@ -98,4 +112,4 @@ def delete_address(addressId: int, db: Session = Depends(get_db)):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=5004)
+    uvicorn.run('main:app', reload=True, host="0.0.0.0", port=5004)
