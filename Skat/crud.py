@@ -39,31 +39,31 @@ def delete_skat_user(db: Session, skat_user: schemas.SkatUser):
 
 def create_skat_year(db: Session, skat_year: schemas.SkatYear):
     ''' '''
-    db_skat_year = models.skatYear(skat_user_id=skat_year.skat_user_id, skat_year_no=skat_year.skat_year_no,
-                                   is_student=skat_year.is_student, interest_rate=skat_year.interest_rate, amount=skat_year.amount)
+    db_skat_year = models.SkatYear(
+        label=skat_year.label, start_date=skat_year.start_date, end_date=skat_year.end_date)
     db.add(db_skat_year)
     db.commit()
     db.refresh(db_skat_year)
-    db_skat_user_yeets = db.query(models.SkatUser).all()
-    for skat_user in db_skat_user_yeets:
-        skat_user_yeet = models.SkatUserYear(
+    db_skat_user_years = db.query(models.SkatUser).all()
+    for skat_user in db_skat_user_years:
+        skat_user_year = models.SkatUserYear(
             skat_user_id=skat_user.id,
             skat_year_id=db_skat_year.id,
             user_id=skat_user.user_id,
         )
-        db.add(skat_user_yeet)
+        db.add(skat_user_year)
     db.commit()
     return db_skat_year
 
 
-def read_skat_year(db: Session, skat_user_id: int):
+def read_skat_year(db: Session, skat_year_id: int):
     ''' '''
-    return db.query(models.skatYear).filter(models.skatYear.skat_user_id == skat_user_id).first()
+    return db.query(models.SkatYear).filter(models.SkatYear.id == skat_year_id).first()
 
 
 def read_all_skat_years(db: Session):
     ''' '''
-    return db.query(models.skatYear).all()
+    return db.query(models.SkatYear).all()
 
 
 def update_skat_year(db: Session, db_skat_year: schemas.SkatYear, skat_year: schemas.SkatYear):
@@ -78,10 +78,12 @@ def update_skat_year(db: Session, db_skat_year: schemas.SkatYear, skat_year: sch
 
 def delete_skat_year(db: Session, skat_year: schemas.SkatYear):
     ''' '''
-    db_skat_year_delete = db.query(models.skatYear).filter(
-        models.skatYear.skat_user_id == skat_year.skat_user_id).delete()
+    db_skat_year_delete = db.query(models.SkatYear).filter(
+        models.SkatYear.id == skat_year.id).delete()
+    db_skat_user_year_delete = db.query(models.SkatUserYear).filter(
+        models.SkatUserYear.skat_year_id == skat_year.id).delete()
     db.commit()
-    return db_skat_year_delete
+    return db_skat_year_delete and db_skat_user_year_delete
 
 
 def pay_taxes(db: Session, pay_taxes: schemas.PayTaxes):
@@ -90,13 +92,19 @@ def pay_taxes(db: Session, pay_taxes: schemas.PayTaxes):
     skat_user_year = db.query(models.SkatUserYear).filter(
         models.SkatUserYear.user_id == pay_taxes.user_id and models.SkatUserYear.user_id != skat_year.id)
 
-    amounts_due = 0
+    amount_due = 0
+    user_id = 1  # skat_user_year.user_id
+    deposits = requests.get(
+        f'localhost:5005/api/list-deposits/{user_id}')
     for item in skat_user_year:
         # If user did not pay taxes past skat years
         # A user is deemed to have paid his taxes if the value is greater than 0
         if(not item.is_paid):
-            amounts_due += item.amount
-        # A user is deemed to have paid his taxes if the value is greater than 0in the SkatUserYear table.
+            for deposit in deposits:
+                deposit_date = deposit['created_at']
+                start_date = item.skat_year.start_date
+                end_date = item.skat_year.end_date
+                print(start_date)
 
     req = requests.post(
         "http://localhost:7071/api/Skat_Tax_Calculator", json={"money": pay_taxes.total_amount})

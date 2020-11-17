@@ -28,7 +28,7 @@ class SkatUserYear(BaseModel):
 
 class SkatYear(BaseModel):
     id: int
-    label: int
+    label: str
     created_at: date
     modified_at: date
     start_date: date

@@ -84,37 +84,38 @@ def delete_skat_user(skatUserId: int, db: Session = Depends(get_db)):
 
 
 @app.get("/api/skatYears", response_model=List[schemas.SkatYear])
-def read_all_skatYears(db: Session = Depends(get_db)):
+def read_all_skat_years(db: Session = Depends(get_db)):
     ''' Get all skatYears '''
-    return crud.read_all_skatYears(db=db)
+    return crud.read_all_skat_years(db=db)
 
 
-@app.get("/api/skatYear/{skatUserId}", response_model=schemas.SkatYear)
-def read_skatYear(skatUserId: int, db: Session = Depends(get_db)):
-    ''' Get skatYear by skat user id '''
-    db_skatYear = crud.read_skatYear(db=db, skat_user_id=skatUserId)
-    if db_skatYear is None:
+@app.get("/api/skatYear/{skatYearId}", response_model=schemas.SkatYear)
+def read_skat_year(skatYearId: int, db: Session = Depends(get_db)):
+    ''' Get SkatYear by skat year id '''
+    db_skat_year = crud.read_skat_year(db=db, skat_year_id=skatYearId)
+    if db_skat_year is None:
         raise HTTPException(status_code=404, detail="SkatYear not found")
-    return db_skatYear
+    return db_skat_year
 
 
 @app.post("/api/skatYear", response_model=schemas.SkatYear)
-def create_skatYear(skatYear: schemas.SkatYearCreate, db: Session = Depends(get_db)):
+def create_skat_year(skatYear: schemas.SkatYearCreate, db: Session = Depends(get_db)):
     ''' Create new skatYear '''
-    db_skat_user = crud.read_skat_user(
-        db=db, user_id=skatYear.skat_user_id)
-    if db_skat_user is None:
-        raise HTTPException(status_code=404, detail="SkatYear not found")
-    return crud.create_skatYear(db=db, skatYear=skatYear)
+    return crud.create_skat_year(db=db, skat_year=skatYear)
 
 
-@app.delete("/api/skatYear/{skatUserId}", response_model=bool)
-def delete_skatYear(skatUserId: int, db: Session = Depends(get_db)):
+@app.delete("/api/skatYear/{skatYearId}", response_model=bool)
+def delete_skat_year(skatYearId: int, db: Session = Depends(get_db)):
     ''' Delete skatYear by skat user id '''
-    db_skatYear = crud.read_skatYear(db=db, skat_user_id=skatUserId)
-    if db_skatYear is None:
+    db_skat_year = crud.read_skat_year(db=db, skat_year_id=skatYearId)
+    if db_skat_year is None:
         raise HTTPException(status_code=404, detail="SkatYear not found")
-    return crud.delete_skatYear(db=db, skatYear=db_skatYear)
+    return crud.delete_skat_year(db=db, skat_year=db_skat_year)
+
+
+@app.post("/api/payTaxes", response_model=schemas.SkatUserYear)
+def pay_taxes(pay_taxes: schemas.PayTaxes, db: Session = Depends(get_db)):
+    return crud.pay_taxes(db=db, pay_taxes=pay_taxes)
 
 
 if __name__ == "__main__":
