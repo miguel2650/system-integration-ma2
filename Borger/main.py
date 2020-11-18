@@ -42,14 +42,14 @@ def read_root():
 # Get all borgere
 
 
-@app.get("/api/users", response_model=List[schemas.BorgerUser])
+@app.get("/api/user-management/users", response_model=List[schemas.BorgerUser])
 def read_all_borger_users(db: Session = Depends(get_db)):
     return crud.read_all_borger_users(db=db)
 
 # Get a borger
 
 
-@app.get("/api/user/{userId}", response_model=schemas.BorgerUser)
+@app.get("/api/user-management/users/{userId}", response_model=schemas.BorgerUser)
 def read_borger_user(userId: int, db: Session = Depends(get_db)):
     db_borger_user = crud.read_borger_user(db=db, UserId=userId)
     if db_borger_user is None:
@@ -58,14 +58,14 @@ def read_borger_user(userId: int, db: Session = Depends(get_db)):
 
 
 # Create a borger
-@app.post("/api/user", response_model=schemas.BorgerUser)
+@app.post("/api/user-management/users", response_model=schemas.BorgerUser)
 def create_borger_user(borger: schemas.BorgerUserCreate, db: Session = Depends(get_db)):
     return crud.create_borger_user(db=db, borgerUser=borger)
 
 # Update a borger
 
 
-@app.put("/api/user/{userId}", response_model=schemas.BorgerUser)
+@app.put("/api/user-management/users/{userId}", response_model=schemas.BorgerUser)
 def update_borger_user(userId: int, borger: schemas.BorgerUserCreate, db: Session = Depends(get_db)):
     db_borger_user = crud.read_borger_user(db=db, UserId=userId)
     if db_borger_user is None:
@@ -75,7 +75,7 @@ def update_borger_user(userId: int, borger: schemas.BorgerUserCreate, db: Sessio
 # Deletes a borger
 
 
-@app.delete("/api/user/{userId}", response_model=bool)
+@app.delete("/api/user-management/users/{userId}", response_model=bool)
 def delete_borger_user(userId: int, db: Session = Depends(get_db)):
     db_borger_user = crud.read_borger_user(db=db, UserId=userId)
     if db_borger_user is None:
@@ -85,14 +85,14 @@ def delete_borger_user(userId: int, db: Session = Depends(get_db)):
 # Get all address
 
 
-@app.get("/api/addresses", response_model=List[schemas.Address])
+@app.get("/api/address-management/addresses", response_model=List[schemas.Address])
 def read_all_borger_address(db: Session = Depends(get_db)):
     return crud.read_all_addresses(db=db)
 
 # Create an address
 
 
-@app.post("/api/address", response_model=schemas.Address)
+@app.post("/api/address-management/addresses", response_model=schemas.Address)
 def create_borger_address(address: schemas.AddressCreate, db: Session = Depends(get_db)):
     db_borger_user = crud.read_borger_user(
         db=db, UserId=address.BorgerUserId)
@@ -103,7 +103,7 @@ def create_borger_address(address: schemas.AddressCreate, db: Session = Depends(
 # Deletes a borger
 
 
-@app.delete("/api/address/{addressId}", response_model=bool)
+@app.delete("/api/address-management/addresses/{addressId}", response_model=bool)
 def delete_address(addressId: int, db: Session = Depends(get_db)):
     db_address = crud.get_address_by_id(db=db, addressId=addressId)
     if db_address is None:

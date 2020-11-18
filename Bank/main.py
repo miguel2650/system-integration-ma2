@@ -44,13 +44,13 @@ def read_root():
     return RedirectResponse(url="/docs/")
 
 
-@app.get("/api/bankUsers", response_model=List[schemas.BankUser])
+@app.get("/api/user-management/users", response_model=List[schemas.BankUser])
 def read_all_bank_users(db: Session = Depends(get_db)):
     ''' Get all bank users '''
     return crud.read_all_bank_users(db=db)
 
 
-@app.get("/api/bankUser/{bankUserId}", response_model=schemas.BankUser)
+@app.get("/api/user-management/users/{bankUserId}", response_model=schemas.BankUser)
 def read_bank_user(bankUserId: int, db: Session = Depends(get_db)):
     ''' Get bank user by id '''
     db_bank_user = crud.read_bank_user(db=db, user_id=bankUserId)
@@ -59,13 +59,13 @@ def read_bank_user(bankUserId: int, db: Session = Depends(get_db)):
     return db_bank_user
 
 
-@app.post("/api/bankUser", response_model=schemas.BankUser)
+@app.post("/api/user-management/users", response_model=schemas.BankUser)
 def create_bank_user(bank_user: schemas.BankUserCreate, db: Session = Depends(get_db)):
     ''' Create new bank user '''
     return crud.create_bank_user(db=db, bank_user=bank_user)
 
 
-@app.put("/api/bankUser/{bankUserId}", response_model=schemas.BankUser)
+@app.put("/api/user-management/users/{bankUserId}", response_model=schemas.BankUser)
 def update_bank_user(bankUserId: int, bank_user: schemas.BankUserCreate, db: Session = Depends(get_db)):
     ''' Update existing bank user '''
     db_bank_user = crud.read_bank_user(db=db, user_id=bankUserId)
@@ -74,7 +74,7 @@ def update_bank_user(bankUserId: int, bank_user: schemas.BankUserCreate, db: Ses
     return crud.update_bank_user(db=db, db_bank_user=db_bank_user, bank_user=bank_user)
 
 
-@app.delete("/api/bankUser/{bankUserId}", response_model=bool)
+@app.delete("/api/user-management/users/{bankUserId}", response_model=bool)
 def delete_bank_user(bankUserId: int, db: Session = Depends(get_db)):
     ''' Delete bank user by id '''
     db_bank_user = crud.read_bank_user(db=db, user_id=bankUserId)
@@ -83,13 +83,13 @@ def delete_bank_user(bankUserId: int, db: Session = Depends(get_db)):
     return crud.delete_bank_user(db=db, bank_user=db_bank_user)
 
 
-@app.get("/api/accounts", response_model=List[schemas.Account])
+@app.get("/api/account-management/accounts", response_model=List[schemas.Account])
 def read_all_accounts(db: Session = Depends(get_db)):
     ''' Get all accounts '''
     return crud.read_all_accounts(db=db)
 
 
-@app.get("/api/account/{bankUserId}", response_model=schemas.Account)
+@app.get("/api/account-management/accounts/{bankUserId}", response_model=schemas.Account)
 def read_account(bankUserId: int, db: Session = Depends(get_db)):
     ''' Get account by bank user id '''
     db_account = crud.read_account(db=db, bank_user_id=bankUserId)
@@ -98,7 +98,7 @@ def read_account(bankUserId: int, db: Session = Depends(get_db)):
     return db_account
 
 
-@app.post("/api/account", response_model=schemas.Account)
+@app.post("/api/account-management/accounts", response_model=schemas.Account)
 def create_account(account: schemas.AccountCreate, db: Session = Depends(get_db)):
     ''' Create new account '''
     db_bank_user = crud.read_bank_user(
@@ -108,7 +108,7 @@ def create_account(account: schemas.AccountCreate, db: Session = Depends(get_db)
     return crud.create_account(db=db, account=account)
 
 
-@app.delete("/api/account/{bankUserId}", response_model=bool)
+@app.delete("/api/account-management/accounts/{bankUserId}", response_model=bool)
 def delete_account(bankUserId: int, db: Session = Depends(get_db)):
     ''' Delete account by bank user id '''
     db_account = crud.read_account(db=db, bank_user_id=bankUserId)
@@ -117,14 +117,14 @@ def delete_account(bankUserId: int, db: Session = Depends(get_db)):
     return crud.delete_account(db=db, account=db_account)
 
 
-@app.post("/api/add-deposit", response_model=schemas.Deposit)
+@app.post("/api/deposit-management/add-deposit", response_model=schemas.Deposit)
 def add_deposit(bank_user_deposit: schemas.BankUserDeposit, db: Session = Depends(get_db)):
     ''' Takes "amount" and "bank_user_id" as parameters. Must not be null or negative. The interest rate will be saved in the Deposits table in the database. '''
     db_deposit = crud.add_deposit(db=db, bank_user_deposit=bank_user_deposit)
     return db_deposit
 
 
-@app.get("/api/list-deposits/{bankUserId}", response_model=List[schemas.Deposit])
+@app.get("/api/deposit-management/list-deposits/{bankUserId}", response_model=List[schemas.Deposit])
 def read_all_deposits(bankUserId: int, db: Session = Depends(get_db)):
     db_deposits = crud.read_all_deposits(db=db, bank_user_id=bankUserId)
     if len(db_deposits) <= 0:
@@ -132,7 +132,7 @@ def read_all_deposits(bankUserId: int, db: Session = Depends(get_db)):
     return db_deposits
 
 
-@app.post("/api/create-loan", response_model=schemas.Loan)
+@app.post("/api/loan-management/create-loan", response_model=schemas.Loan)
 def create_loan(loan: schemas.LoanCreate, db: Session = Depends(get_db)):
     ''' '''
     db_bank_user = crud.read_bank_user(db=db, user_id=loan.user_id)
@@ -146,7 +146,7 @@ def create_loan(loan: schemas.LoanCreate, db: Session = Depends(get_db)):
     return loan
 
 
-@app.post("/api/pay-loan", response_model=schemas.Loan)
+@app.post("/api/loan-management/pay-loan", response_model=schemas.Loan)
 def pay_loan(loan: schemas.PayLoan, db: Session = Depends(get_db)):
     ''' '''
     db_bank_user = crud.read_bank_user(db=db, user_id=loan.user_id)
@@ -160,7 +160,7 @@ def pay_loan(loan: schemas.PayLoan, db: Session = Depends(get_db)):
     return loan
 
 
-@app.get("/api/list-loans/{bankUserId}", response_model=List[schemas.Loan])
+@app.get("/api/loan-management/list-loans/{bankUserId}", response_model=List[schemas.Loan])
 def read_all_loans(bankUserId: int, db: Session = Depends(get_db)):
     ''' '''
     db_loans = crud.read_all_loans(db=db, bank_user_id=bankUserId)
@@ -169,7 +169,7 @@ def read_all_loans(bankUserId: int, db: Session = Depends(get_db)):
     return db_loans
 
 
-@app.post("/api/withdraw-money", response_model=schemas.Account)
+@app.post("/api/account-management/withdraw-money", response_model=schemas.Account)
 def withdraw_money(withdraw: schemas.WithdrawMoney, db: Session = Depends(get_db)):
     ''' '''
     db_bank_user = crud.read_bank_user(db=db, user_id=withdraw.user_id)

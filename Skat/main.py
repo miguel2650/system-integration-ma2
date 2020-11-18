@@ -44,13 +44,13 @@ def read_root():
     return RedirectResponse(url="/docs/")
 
 
-@app.get("/api/skatUsers", response_model=List[schemas.SkatUser])
+@app.get("/api/user-management/users", response_model=List[schemas.SkatUser])
 def read_all_skat_users(db: Session = Depends(get_db)):
     ''' Get all skat users '''
     return crud.read_all_skat_users(db=db)
 
 
-@app.get("/api/skatUser/{skatUserId}", response_model=schemas.SkatUser)
+@app.get("/api/user-management/users/{skatUserId}", response_model=schemas.SkatUser)
 def read_skat_user(skatUserId: int, db: Session = Depends(get_db)):
     ''' Get skat user by id '''
     db_skat_user = crud.read_skat_user(db=db, user_id=skatUserId)
@@ -59,13 +59,13 @@ def read_skat_user(skatUserId: int, db: Session = Depends(get_db)):
     return db_skat_user
 
 
-@app.post("/api/skatUser", response_model=schemas.SkatUser)
+@app.post("/api/user-management/users", response_model=schemas.SkatUser)
 def create_skat_user(skat_user: schemas.SkatUserCreate, db: Session = Depends(get_db)):
     ''' Create new skat user '''
     return crud.create_skat_user(db=db, skat_user=skat_user)
 
 
-@app.put("/api/skatUser/{skatUserId}", response_model=schemas.SkatUser)
+@app.put("/api/user-management/users/{skatUserId}", response_model=schemas.SkatUser)
 def update_skat_user(skatUserId: int, skat_user: schemas.SkatUserCreate, db: Session = Depends(get_db)):
     ''' Update existing skat user '''
     db_skat_user = crud.read_skat_user(db=db, user_id=skatUserId)
@@ -74,7 +74,7 @@ def update_skat_user(skatUserId: int, skat_user: schemas.SkatUserCreate, db: Ses
     return crud.update_skat_user(db=db, db_skat_user=db_skat_user, skat_user=skat_user)
 
 
-@app.delete("/api/skatUser/{skatUserId}", response_model=bool)
+@app.delete("/api/user-management/users/{skatUserId}", response_model=bool)
 def delete_skat_user(skatUserId: int, db: Session = Depends(get_db)):
     ''' Delete skat user by id '''
     db_skat_user = crud.read_skat_user(db=db, user_id=skatUserId)
@@ -83,13 +83,13 @@ def delete_skat_user(skatUserId: int, db: Session = Depends(get_db)):
     return crud.delete_skat_user(db=db, skat_user=db_skat_user)
 
 
-@app.get("/api/skatYears", response_model=List[schemas.SkatYear])
+@app.get("/api/year-management/years", response_model=List[schemas.SkatYear])
 def read_all_skat_years(db: Session = Depends(get_db)):
     ''' Get all skatYears '''
     return crud.read_all_skat_years(db=db)
 
 
-@app.get("/api/skatYear/{skatYearId}", response_model=schemas.SkatYear)
+@app.get("/api/year-management/years/{skatYearId}", response_model=schemas.SkatYear)
 def read_skat_year(skatYearId: int, db: Session = Depends(get_db)):
     ''' Get SkatYear by skat year id '''
     db_skat_year = crud.read_skat_year(db=db, skat_year_id=skatYearId)
@@ -98,13 +98,13 @@ def read_skat_year(skatYearId: int, db: Session = Depends(get_db)):
     return db_skat_year
 
 
-@app.post("/api/skatYear", response_model=schemas.SkatYear)
+@app.post("/api/year-management/years", response_model=schemas.SkatYear)
 def create_skat_year(skatYear: schemas.SkatYearCreate, db: Session = Depends(get_db)):
     ''' Create new skatYear '''
     return crud.create_skat_year(db=db, skat_year=skatYear)
 
 
-@app.delete("/api/skatYear/{skatYearId}", response_model=bool)
+@app.delete("/api/year-management/years/{skatYearId}", response_model=bool)
 def delete_skat_year(skatYearId: int, db: Session = Depends(get_db)):
     ''' Delete skatYear by skat user id '''
     db_skat_year = crud.read_skat_year(db=db, skat_year_id=skatYearId)
@@ -113,7 +113,7 @@ def delete_skat_year(skatYearId: int, db: Session = Depends(get_db)):
     return crud.delete_skat_year(db=db, skat_year=db_skat_year)
 
 
-@app.put("/api/skatYear/{skatYearId}", response_model=schemas.SkatYear)
+@app.put("/api/year-management/years/{skatYearId}", response_model=schemas.SkatYear)
 def update_skat_user(skatYearId: int, skat_year: schemas.SkatYearCreate, db: Session = Depends(get_db)):
     ''' Update existing skat year '''
     db_skat_year = crud.read_skat_year(db=db, user_id=skatYearId)
@@ -122,7 +122,7 @@ def update_skat_user(skatYearId: int, skat_year: schemas.SkatYearCreate, db: Ses
     return crud.update_skat_year(db=db, db_skat_year=db_skat_year, skat_year=skat_year)
 
 
-@app.post("/api/payTaxes", response_model=List[schemas.SkatUserYear])
+@app.post("/api/tax-management/pay-taxes", response_model=List[schemas.SkatUserYear])
 def pay_taxes(pay_taxes: schemas.PayTaxes, db: Session = Depends(get_db)):
     try:
         skat_user_years = crud.pay_taxes(db=db, pay_taxes=pay_taxes)

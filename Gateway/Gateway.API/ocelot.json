@@ -37,6 +37,7 @@
       "UpstreamHttpMethod": ["GET", "POST", "DELETE", "PUT"]
     },
     {
+      
       "DownstreamPathTemplate": "/api/{controller}/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostandPorts": [
@@ -123,6 +124,7 @@
   ],
   "GlobalConfiguration": {
     "RequestIdKey": null,
-    "AdministrationPath": null
+    "AdministrationPath": null,
+    "BaseUrl": "https://localhost:5000"
   }
 }
